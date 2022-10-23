@@ -43,7 +43,13 @@ const time = document.createElement('span');
 time.classList.add('time__wrapper');
 time.textContent = `Time: 0:00`;
 
-div.append(buttonsDiv, moves, time, desk)
+const popStart = document.createElement('div');
+popStart.className = 'pop__start';
+popStart.textContent = `Press "Shuffle & Start" to start`
+
+const popWon = document.createElement('div');
+popWon.className = 'pop__won';
+div.append(buttonsDiv, moves, time, desk, popStart, popWon)
 
 // desk.insertAdjacentElement('beforebegin', moves);
 // desk.insertAdjacentElement('beforebegin', time);
@@ -81,10 +87,17 @@ div.append(frameSize)
 
 const ulDiv = document.createElement('div');
 ulDiv.className = 'ul__div';
-ulDiv.textContent = 'Other sizes: '
+ulDiv.textContent = ''
 div.append(ulDiv);
 
 ulDiv.append(three, four, five, six, seven, eight)
+
+
+const soundBtn = document.createElement('button');
+soundBtn.type = 'button';
+soundBtn.classList.add('sound__btn');
+
+ulDiv.appendChild(soundBtn)
 
 //
 let numbers = [...Array(16).keys()].map(x => x + 1);
@@ -100,7 +113,38 @@ for (let i=1; i<=16; i++) {
 const puzzles = Array.from(document.querySelectorAll('.puzzle'));
 const countPuzzles = 16;
 
+//Счётчик ходов
+
+function countMoves() {
+    counterMoves++;
+    moves.innerHTML = `Moves: ${counterMoves}`;
+}
+
+
+//Секундомер
+let secundomer;
+let zero = '0';
+
+function secTimer() {
+    let sec = 0;
+    let min = 0;
+
+    secundomer = setInterval(()=> {
+        if (sec<10) {
+            time.textContent = `Time: ${min}:${zero}${sec}`;
+        } else if (sec>=10 && sec <60) {
+            time.textContent = `Time: ${min}:${sec}`;
+        } else if (sec>59 && min<10) {
+            min++;
+            sec=0;
+            time.textContent = `Time: ${min}:${zero}${sec}`;
+        } 
+        sec++;
+    }, 1000)
+}
+
 /*1.POSITION*/
+popWon.style.display = 'none';
 puzzles[countPuzzles - 1].style.display = 'none';
 let matrix = getMatrix(
     puzzles.map((puzzle) => Number(puzzle.textContent))
@@ -112,8 +156,22 @@ const maxShuffleCount = 100;
 let timer;
 
 startBtn.addEventListener('click', () => {
+    popWon.style.display = 'none';
+    moves.innerHTML = `Moves: ${counterMoves=0}`;
     randomSwap(matrix);
     setPositionsPuzzles(matrix);
+
+    if (time.textContent === 'Time: 0:00') {
+    setTimeout(() => {
+        secTimer()
+    }, 1000);} else {
+        clearInterval(secundomer);
+        setTimeout(() => {
+            secTimer()
+        }, 1000);
+    }
+
+    popStart.style.display = 'none';
 
     let shuffleCount = 0;
     clearInterval(timer);
@@ -131,6 +189,10 @@ startBtn.addEventListener('click', () => {
 
 })
 
+stopBtn.addEventListener('click', () => {
+    clearInterval(secundomer);
+    popStart.style.display = 'inherit';
+})
 /*3.Change position*/
 const blankNumber = 16;
 desk.addEventListener('click', (event) => {
@@ -146,6 +208,8 @@ desk.addEventListener('click', (event) => {
     if(isValid) {
         swap(blankCoords, buttonCoords, matrix);
         setPositionsPuzzles(matrix);
+        countMoves();
+        soundPuzzle.play()
     }
 })
 /*
@@ -242,6 +306,7 @@ function swap(coords1, coords2, matrix) {
 
     if (isWon(matrix)) {
         addWonClass();
+        clearInterval(secundomer);
     }
 }
 
@@ -257,13 +322,21 @@ function isWon(matrix) {
     return true;
 }
 
-const wonClass = 'puzzleWon';
 function addWonClass() {
-    setTimeout(() => {
-        desk.classList.add(wonClass);
-
-        setTimeout(() => {
-            desk.classList.remove(wonClass);
-        }, 1000)
-    }, 200)
+    popWon.style.display = 'inherit';
+    popWon.textContent = `Hooray! You solved the puzzle in ${time.textContent} and ${counterMoves+1} moves!`
 }
+
+//звук перемещения плитки
+soundBtn.addEventListener('click', () => {
+    soundBtn.classList.toggle('active');
+    if (soundBtn.classList.contains('active')) {
+        soundPuzzle.volume = 0;
+    } else {
+        soundPuzzle.volume = 0.2;
+    }
+    
+})
+const soundPuzzle = new Audio('./sound/pop.mp3');
+soundPuzzle.volume = 0.2;
+console.log(soundPuzzle.volume===0.2);
