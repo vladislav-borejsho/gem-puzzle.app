@@ -152,7 +152,7 @@ let matrix = getMatrix(
 setPositionsPuzzles(matrix);
 
 /*2.Shuffle*/
-const maxShuffleCount = 100;
+const maxShuffleCount = 0;
 let timer;
 
 startBtn.addEventListener('click', () => {
