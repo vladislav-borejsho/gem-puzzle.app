@@ -63,6 +63,7 @@ four.className = 'four';
 four.classList.add('active')
 four.textContent = '4x4';
 
+
 const five = document.createElement('div');
 five.className = 'five';
 five.textContent = '5x5';
@@ -92,7 +93,6 @@ div.append(ulDiv);
 
 ulDiv.append(three, four, five, six, seven, eight)
 
-
 const soundBtn = document.createElement('button');
 soundBtn.type = 'button';
 soundBtn.classList.add('sound__btn');
@@ -107,8 +107,12 @@ for (let i=1; i<=16; i++) {
     const value = numbers[i - 1];
     puzzle.className = 'puzzle';
     puzzle.innerHTML = value;
+    puzzle.draggable ='true';
     desk.append(puzzle);
+
+
 }
+
 
 const puzzles = Array.from(document.querySelectorAll('.puzzle'));
 const countPuzzles = 16;
@@ -161,7 +165,7 @@ startBtn.addEventListener('click', () => {
     randomSwap(matrix);
     setPositionsPuzzles(matrix);
 
-    if (time.textContent === 'Time: 0:00') {
+    if (time === 0) {
     setTimeout(() => {
         secTimer()
     }, 1000);} else {
@@ -202,6 +206,7 @@ desk.addEventListener('click', (event) => {
     const buttonNumber = Number(buttonPuzzle.textContent);
     const buttonCoords = findCoorinatesByNumber(buttonNumber, matrix);
     const blankCoords = findCoorinatesByNumber(blankNumber, matrix);
+    console.log(blankCoords);
 
     const isValid = isValidForSwap(buttonCoords, blankCoords);
 
@@ -209,8 +214,9 @@ desk.addEventListener('click', (event) => {
         swap(blankCoords, buttonCoords, matrix);
         setPositionsPuzzles(matrix);
         countMoves();
-        soundPuzzle.play()
+        soundPuzzle.play();
     }
+
 })
 /*
     Helpers
@@ -339,4 +345,45 @@ soundBtn.addEventListener('click', () => {
 })
 const soundPuzzle = new Audio('./sound/pop.mp3');
 soundPuzzle.volume = 0.2;
-console.log(soundPuzzle.volume===0.2);
+
+//перетаскивание мышью
+// const dragAndDrop = () => {
+//     const puzzle = document.querySelectorAll('.puzzle');
+
+//     const dragStart = function() {
+//         setTimeout(() => {
+//             this.classList.add('hide');
+//         }, 0)
+//     };
+//     const dragEnd = function() {
+//         setTimeout(() => {
+//             this.classList.remove('hide');
+//         }, 0)
+//     };
+//     for (let i=0; i < puzzle.length; i++) {
+//         puzzle[i].addEventListener('dragstart', dragStart);
+//         puzzle[i].addEventListener('dragend', dragEnd);
+    
+
+//     desk.addEventListener('dragover', dragOver);
+//     // desk.addEventListener('dragenter', dragEnter);
+//     // desk.addEventListener('dragleave', dragLeave);
+//     desk.addEventListener('drop', dragDrop);
+
+//     function dragOver(event) {
+//         event.preventDefault();
+//     }
+//     // function dragEnter() {
+//     //     this.classList.add('hovered')
+//     // }
+//     // function dragLeave() {
+//     //     this.classList.remove('hovered')
+//     // }
+//     function dragDrop() {
+        
+//     }
+// }
+// };
+// dragAndDrop();
+
+

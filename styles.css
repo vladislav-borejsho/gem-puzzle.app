@@ -152,6 +152,10 @@
     transition: all 0.2s; 
 }
 
+.hide {
+    display: none;
+}
+
 @media screen and (max-width: 420px) {
     .desk {
         width: 300px;
